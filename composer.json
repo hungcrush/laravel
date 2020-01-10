@@ -1,3 +1,4 @@
+
 {
     "name": "laravel/laravel",
     "type": "project",
@@ -10,6 +11,7 @@
     "require": {
         "php": "^7.2",
         "fideloper/proxy": "^4.0",
+        "hanbiro/crm-customer": "dev-master",
         "laravel/framework": "^6.2",
         "laravel/tinker": "^2.0"
     },
@@ -56,6 +58,24 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "pre-install-cmd": [
+            "rm -rf ./packages",
+            "git clone git@git.hanbiro.codes:harry/packages.git packages/crm"
+        ],
+        "pre-update-cmd": [
+            "cd ./packages/crm && git pull"
         ]
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "ssh://git@git.hanbiro.com:5022/groupware/laravel-base.git"
+        },
+        {
+            "type": "path",
+            "url": "./packages/crm/*"
+        }
+    ]
+
 }
