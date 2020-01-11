@@ -12,7 +12,9 @@
         "fideloper\/proxy": "^4.0",
         "laravel\/framework": "^6.2",
         "laravel\/tinker": "^2.0",
-        "hanbiro/base": "dev-master"
+        "hanbiro\/base": "dev-master",
+        "hanbiro\/crm-customer": "*@dev",
+        "hanbiro\/crm-page-layout": "*@dev"
     },
     "require-dev": {
         "facade\/ignition": "^1.4",
@@ -57,13 +59,30 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "on-install": [
+            "rm -rf .\/packages\/crm",
+            "git clone git@git.hanbiro.codes:harry\/packages.git packages\/crm"
+        ],
+        "on-update": [
+            "cd .\/packages\/crm && git pull"
+        ],
+        "pre-install-cmd": [
+            "@on-install"
+        ],
+        "pre-update-cmd": [
+            "@on-update"
         ]
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "git@git.hanbiro.codes:harry\/hanbiro-packages.git"
+        },
+        {
+            "type": "path",
+            "url": ".\/packages\/crm\/*"
         }
     ],
-    "version": "01.11.20"
+    "version": "1578710293"
 }
