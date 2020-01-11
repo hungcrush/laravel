@@ -47,12 +47,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "on-install": [
-
-        ],
-        "on-update": [
-
-        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -62,12 +56,6 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ],
-        "post-install-cmd": [
-            "@on-install"
-        ],
-        "pre-update-cmd": [
-            "@on-update"
         ]
     },
     "repositories": [
