@@ -62,7 +62,8 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@git.hanbiro.codes:harry\/hanbiro-packages.git"
+            "url": "git@git.hanbiro.codes:harry\/hanbiro-packages.git",
+            "name": "based"
         }
     ]
 }
