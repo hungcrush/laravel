@@ -65,7 +65,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@git.hanbiro.codes:harry\/hanbiro-packages.git",
+            "url": "ssh://git@git.hanbiro.com:5022/groupware/laravel-base.git",
             "name": "based"
         }
     ]
