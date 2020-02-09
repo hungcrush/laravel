@@ -1,10 +1,17 @@
 {
-    "name": "laravel\/laravel",
+    "name": "hanbiro\/laravel",
     "type": "project",
     "description": "Hanbiro Laravel Framework.",
     "keywords": [
         "framework",
         "laravel"
+    ],
+    "authors": [
+        {
+            "name": "Harry Tr",
+            "email": "hung.tv@hanbiro.com",
+            "homepage": "http://hanbiro.codes/"
+        }
     ],
     "license": "MIT",
     "require": {
@@ -12,7 +19,9 @@
         "fideloper\/proxy": "^4.0",
         "laravel\/framework": "^6.2",
         "laravel\/tinker": "^2.0",
-        "hanbiro\/base": "dev-master_home"
+        "hanbiro\/base": "dev-master_home",
+        "hanbiro\/crm-customer": "*@dev",
+        "hanbiro\/crm-page-layout": "*@dev"
     },
     "require-dev": {
         "facade\/ignition": "^1.4",
@@ -59,14 +68,30 @@
             "@php artisan key:generate --ansi"
         ],
         "pre-install-cmd": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+            "@on-install"
+        ],
+        "on-install": [
+            "rm -rf .\/packages\/crm",
+            "git clone ssh:\/\/git@git.hanbiro.com:5022\/groupware\/new-crm-laravel.git packages\/crm"
+        ],
+        "on-update": [
+            "cd .\/packages\/crm && git pull"
+        ],
+        "pre-update-cmd": [
+            "@on-update"
         ]
     },
     "repositories": [
         {
             "type": "vcs",
-            "url": "ssh://git@git.hanbiro.com:5022/groupware/laravel-base.git",
+            "url": "ssh:\/\/git@git.hanbiro.com:5022\/groupware\/laravel-base.git",
             "name": "based"
+        },
+        {
+            "type": "path",
+            "url": ".\/packages\/crm\/*",
+            "name": "crm"
         }
-    ]
+    ],
+    "version": "1580656702"
 }
