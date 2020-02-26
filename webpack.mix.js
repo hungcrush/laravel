@@ -1,6 +1,40 @@
 let glob = require('glob');
 let mix  = require('laravel-mix');
 let path = require('path');
+
+/*
+ |--------------------------------------------------------------------------
+ | Config webpack variables
+ |--------------------------------------------------------------------------
+ */
+
+const publicPath = 'public/assets/';
+const vendorPath = 'vendor/hanbiro/base/';
+const packagePath= 'packages/';
+
+const externals = {
+    'jquery': {
+        'commonjs': 'jquery',
+        'commonjs2': 'jquery',
+        'amd': 'jquery',
+        'root': '$'
+    },
+    'lodash': '_',
+    "window": "window",
+    'react': 'React',
+    'react-dom': 'ReactDOM',
+    'react-is': 'ReactIs',
+    'prop-types': 'PropTypes',
+    'moment': 'moment',
+    'classnames': 'classNames'
+};
+const alias = {
+
+};
+
+const modules = [
+    'node_modules'
+];
 /*
  |--------------------------------------------------------------------------
  | Hanbiro Asset Management
@@ -26,42 +60,10 @@ const mixingModule = (moduleConfig, name) => {
     if(moduleConfig.sources) {
         moduleConfig.sources.map(mixData => {
             let method = getFileExtension(mixData[0]);
-            mix = mix[method]( (mixData[0].match(/base|acl|core/) ? 'vendor/hanbiro/base/' : 'packages/' + name + '/') + mixData[0], publicPath + mixData[1]);
+            mix = mix[method]( (mixData[0].match(/base|acl|core/) ? vendorPath : packagePath + name + '/') + mixData[0], publicPath + mixData[1]);
         })
     }
 }
-
-/*
- |--------------------------------------------------------------------------
- | Config webpack variables
- |--------------------------------------------------------------------------
- */
-
-const publicPath = 'public/assets/';
-
-const externals = {
-    'jquery': {
-        'commonjs': 'jquery',
-        'commonjs2': 'jquery',
-        'amd': 'jquery',
-        'root': '$'
-    },
-    'lodash': '_',
-    "window": "window",
-    'react': 'React',
-    'react-dom': 'ReactDOM',
-    'react-is': 'ReactIs',
-    'prop-types': 'PropTypes',
-    'moment': 'moment',
-    'classnames': 'classNames'
-};
-const alias = {
-
-};
-
-const modules = [
-    'node_modules'
-];
 
 /*
  |--------------------------------------------------------------------------
@@ -72,6 +74,11 @@ const scanedModules = [];
 
 let Base = require('./vendor/hanbiro/base/webpack.config.js');
 
+if(Base.alias) {
+    Object.keys(Base.alias).map(al => {
+        alias[al] = path.resolve(__dirname, vendorPath + Base.alias[al]);
+    })
+}
 
 //-- scan packages project
 glob.sync('./packages/*/webpack.config.js').forEach(config => {
