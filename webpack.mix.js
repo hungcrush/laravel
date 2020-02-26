@@ -1,5 +1,6 @@
 let glob = require('glob');
 let mix  = require('laravel-mix');
+let path = require('path');
 /*
  |--------------------------------------------------------------------------
  | Hanbiro Asset Management
@@ -15,16 +16,27 @@ const getFileExtension = (fileName) => {
     return ext;
 }
 
-const mixingModule = (module) => {
-    if(module.sources) {
-        sources.map(mixData => {
+const getConfigName = (path) => {
+    let name = path.split('/');
+
+    return name[name.length - 2];
+}
+
+const mixingModule = (moduleConfig, name) => {
+    if(moduleConfig.sources) {
+        moduleConfig.sources.map(mixData => {
             let method = getFileExtension(mixData[0]);
-            mix[method](resourcePath + mixData[0], publicPath + mixData[1]);
+            mix = mix[method]( (mixData[0].match(/base|acl|core/) ? 'vendor/hanbiro/base/' : 'packages/' + name + '/') + mixData[0], publicPath + mixData[1]);
         })
     }
 }
 
-const resourcePath = 'vendor/hanbiro/';
+/*
+ |--------------------------------------------------------------------------
+ | Config webpack variables
+ |--------------------------------------------------------------------------
+ */
+
 const publicPath = 'public/assets/';
 
 const externals = {
@@ -43,17 +55,57 @@ const externals = {
     'moment': 'moment',
     'classnames': 'classNames'
 };
+const alias = {
 
-mix.webpackConfig({
-    externals
-})
-    .options({ extractVueStyles: true });
+};
+
+const modules = [
+    'node_modules'
+];
+
+/*
+ |--------------------------------------------------------------------------
+ | Modules
+ |--------------------------------------------------------------------------
+ */
+const scanedModules = [];
 
 let Base = require('./vendor/hanbiro/base/webpack.config.js');
+
+
+//-- scan packages project
+glob.sync('./packages/*/webpack.config.js').forEach(config => {
+    let module = require(config);
+    let name = getConfigName(config);
+
+    if(module.alias) {
+        Object.keys(module.alias).map(al => {
+            alias[al] = path.resolve(__dirname, 'packages/' + name + '/' + module.alias[al]);
+        });
+        console.log(alias);
+    }
+
+    scanedModules.push({module, name});
+});
+
+
+/**
+ * -------------
+ * Exect packages
+ * ----------------------------
+ */
+
+mix.webpackConfig({
+    externals,
+    resolve: {
+        alias,
+        extensions: ['.js'],
+        modules
+    }
+});
+// Base mixing
 mixingModule(Base);
 
-// scan packages project
-glob.sync('./packages/*/webpack.config.js').forEach(config => {
-    let ModuleConfig = require(config);
-    mixingModule(ModuleConfig);
-});
+scanedModules.map((Module) => {
+    mixingModule(Module.module, Module.name);
+})

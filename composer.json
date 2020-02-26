@@ -10,7 +10,7 @@
         {
             "name": "Harry Tr",
             "email": "hung.tv@hanbiro.com",
-            "homepage": "http://hanbiro.codes/"
+            "homepage": "http:\/\/hanbiro.codes\/"
         }
     ],
     "license": "MIT",
@@ -19,7 +19,8 @@
         "fideloper\/proxy": "^4.0",
         "laravel\/framework": "^6.2",
         "laravel\/tinker": "^2.0",
-        "hanbiro\/base": "dev-master_home"
+        "hanbiro\/base": "dev-master_home",
+        "hanbiro\/hr-timecard": "*@dev"
     },
     "require-dev": {
         "facade\/ignition": "^1.4",
@@ -64,6 +65,19 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "on-install": [
+            "rm -rf .\/packages\/hr",
+            "git clone ssh:\/\/git@git.hanbiro.com:5022\/groupware\/new-hanbiro-hr-laravel.git packages\/hr"
+        ],
+        "on-update": [
+            "cd .\/packages\/hr && git pull"
+        ],
+        "pre-install-cmd": [
+            "@on-install"
+        ],
+        "pre-update-cmd": [
+            "@on-update"
         ]
     },
     "repositories": [
@@ -71,6 +85,12 @@
             "type": "vcs",
             "url": "ssh:\/\/git@git.hanbiro.com:5022\/groupware\/laravel-base.git",
             "name": "based"
+        },
+        {
+            "type": "path",
+            "url": ".\/packages\/hr\/*",
+            "name": "hr"
         }
-    ]
+    ],
+    "version": "1581342204"
 }
