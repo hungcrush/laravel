@@ -60,7 +60,12 @@ const mixingModule = (moduleConfig, name) => {
     if(moduleConfig.sources) {
         moduleConfig.sources.map(mixData => {
             let method = getFileExtension(mixData[0]);
-            mix = mix[method]( (mixData[0].match(/base|acl|core/) ? vendorPath : packagePath + name + '/') + mixData[0], publicPath + mixData[1]);
+            mix = mix[method]( (
+                mixData[0].match(/base|acl|core/) ?
+                    vendorPath :
+                    packagePath + name + '/') + mixData[0],
+
+                publicPath + (mixData[1] || 'acl'));
         })
     }
 }
@@ -89,7 +94,6 @@ glob.sync('./packages/*/webpack.config.js').forEach(config => {
         Object.keys(module.alias).map(al => {
             alias[al] = path.resolve(__dirname, 'packages/' + name + '/' + module.alias[al]);
         });
-        console.log(alias);
     }
 
     scanedModules.push({module, name});
@@ -109,7 +113,8 @@ mix.webpackConfig({
         extensions: ['.js'],
         modules
     }
-});
+})
+.options({ extractVueStyles: true });
 // Base mixing
 mixingModule(Base);
 
