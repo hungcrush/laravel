@@ -1,7 +1,7 @@
 let glob = require('glob');
 let mix  = require('laravel-mix');
 let path = require('path');
-
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 /*
  |--------------------------------------------------------------------------
  | Config webpack variables
@@ -112,12 +112,16 @@ mix.webpackConfig({
         alias,
         extensions: ['.js'],
         modules
-    }
+    },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: '[name].css',
+        }),
+    ]
 })
-.options({ extractVueStyles: true });
+    .options({ extractVueStyles: true });
 // Base mixing
 mixingModule(Base);
-
 scanedModules.map((Module) => {
     mixingModule(Module.module, Module.name);
 })
