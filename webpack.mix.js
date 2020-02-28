@@ -119,8 +119,7 @@ mix.webpackConfig({
             filename: '[name].css',
         }),
     ]
-})
-    .options({ extractVueStyles: true });
+});
 // Base mixing
 mixingModule(Base);
 scanedModules.map((Module) => {
