@@ -113,6 +113,7 @@ mix.webpackConfig({
         extensions: ['.js'],
         modules
     },
+    optimization: { concatenateModules: false, providedExports: false, usedExports: false },
     plugins: [
         new MiniCssExtractPlugin({
             filename: '[name].css',
