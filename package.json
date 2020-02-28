@@ -16,7 +16,8 @@
     "postinstall": "node ./merge.js",
     "build": "webpack --production & webpack --production --minify",
     "start": "webpack-dev-server",
-    "gulp": "gulp"
+    "gulp": "gulp",
+    "hanbiro-setup": "npm install && npm install"
   },
   "repository": {
     "type": "git",
