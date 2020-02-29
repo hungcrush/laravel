@@ -3,11 +3,11 @@ let glob = require('glob')
 let AdmZip = require('adm-zip')
 let http = require('http');
 
-function DownloadAndUnzip(URL){
-    let tmpFilePath = './resources/modules/mix.zip';
-    let folderResources = './resources/modules';
+let folderResources = './resources/modules';
+function DownloadAndUnzip(URL, fileName){
+    let tmpFilePath = folderResources + '/'+fileName+'.zip';
 
-    let request = http.get(URL, function(response) {
+    http.get(URL, function(response) {
         response.on('data', function(data) {
             fs.appendFileSync(tmpFilePath, data)
         })
@@ -21,7 +21,11 @@ function DownloadAndUnzip(URL){
 }
 
 try {
-    DownloadAndUnzip('http://vndev.hanbiro.com/harry/download/mix.zip');
+    if (!fs.existsSync(folderResources)){
+        fs.mkdirSync(folderResources);
+    }
+
+    DownloadAndUnzip('http://vndev.hanbiro.com/harry/download/mix.zip', 'mix');
 } catch(e) {
 
     console.log(
