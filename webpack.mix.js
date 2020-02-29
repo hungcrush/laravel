@@ -1,5 +1,5 @@
 let glob = require('glob');
-let mix  = require('laravel-mix');
+let mix  = require('./resources/modules/laravel-mix');
 let path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 /*
@@ -58,15 +58,18 @@ const getConfigName = (path) => {
 
 const mixingModule = (moduleConfig, name) => {
     if(moduleConfig.sources) {
-        moduleConfig.sources.map(mixData => {
-            let method = getFileExtension(mixData[0]);
-            mix = mix[method]( (
-                mixData[0].match(/base|acl|core/) ?
-                    vendorPath :
-                    packagePath + name + '/') + mixData[0],
+        moduleConfig.sources
+            // .filter(mixData => getFileExtension(mixData[0]) !== 'react')
+            .map(mixData => {
+                let method = getFileExtension(mixData[0]);
+                mix[method]( (
+                    mixData[0].match(/base|acl|core/) ?
+                        vendorPath :
+                        packagePath + name + '/') + mixData[0],
 
-                publicPath + (mixData[1] || 'acl'));
-        })
+                    publicPath + (mixData[1] || 'acl'));
+
+            })
     }
 }
 
@@ -86,42 +89,55 @@ if(Base.alias) {
 }
 
 //-- scan packages project
-glob.sync('./packages/*/webpack.config.js').forEach(config => {
-    let module = require(config);
-    let name = getConfigName(config);
+if(!process.env.MIX_ONLY_BASE) {
+    glob.sync('./packages/*/webpack.config.js').forEach(config => {
+        let module = require(config);
+        let name = getConfigName(config);
 
-    if(module.alias) {
-        Object.keys(module.alias).map(al => {
-            alias[al] = path.resolve(__dirname, 'packages/' + name + '/' + module.alias[al]);
-        });
-    }
+        if(module.alias) {
+            Object.keys(module.alias).map(al => {
+                alias[al] = path.resolve(__dirname, 'packages/' + name + '/' + module.alias[al]);
+            });
+        }
 
-    scanedModules.push({module, name});
-});
-
-
+        scanedModules.push({module, name});
+    });
+}
 /**
  * -------------
  * Exect packages
  * ----------------------------
  */
 
-mix.webpackConfig({
-    externals,
-    resolve: {
-        alias,
-        extensions: ['.js'],
-        modules
-    },
-    optimization: { concatenateModules: false, providedExports: false, usedExports: false },
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: '[name].css',
-        }),
-    ]
-});
+mix
+    .options({
+        extractVueStyles: false
+    })
+    .webpackConfig({
+        externals,
+        resolve: {
+            alias,
+            extensions: ['.js'],
+            modules
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.scss$/i,
+                    use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+                },
+            ],
+        },
+        optimization: { concatenateModules: false, providedExports: false, usedExports: false },
+        plugins: [
+            new MiniCssExtractPlugin({
+                filename: 'assets/css/hanbiro.css',
+                chunkFilename: '[id].css',
+            }),
+        ]
+    });
 // Base mixing
 mixingModule(Base);
 scanedModules.map((Module) => {
     mixingModule(Module.module, Module.name);
-})
+});
